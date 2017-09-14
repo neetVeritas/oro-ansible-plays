@@ -1,6 +1,6 @@
 # Oro / ***Ansible Plays***
 
-> This project has been cloned from the private oro-project repository. Our provisioning hosts and group variables have been left decrypted, with sensative information being removed.
+> This project has been cloned from the private oro-project repository.
 
 These ansible playbooks will be used to stage any server being used by Oro.
 This includes general use servers, private docker registry, concourse ci, as well as webservers used for deployments.
