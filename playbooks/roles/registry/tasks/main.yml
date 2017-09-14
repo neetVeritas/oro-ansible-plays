@@ -1,0 +1,28 @@
+- name: Create Docker Registry
+  docker_container:
+    name: registry
+    image: registry:2
+    state: started
+    restart_policy: unless-stopped
+    volumes:
+      - /etc/docker/registry:/var/lib/registry
+    published_ports:
+      - "{{oro_registry_port}}:5000"
+
+- name: Generate Hashed Password for Docker Registry Auth
+  htpasswd:
+    path: /etc/nginx/conf.d/registry.password
+    name: "{{oro_registry_user}}"
+    password: "{{oro_registry_pass}}"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Apply NGINX Configuration for Docker Registry
+  template:
+    src: registry.conf.j2
+    dest: /etc/nginx/conf.d/registry.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart NGINX Container

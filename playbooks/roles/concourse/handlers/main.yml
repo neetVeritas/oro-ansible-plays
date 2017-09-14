@@ -1,0 +1,24 @@
+- name: Generate Concourse Web Key
+  shell: |
+    rm -rf /etc/concourse/keys/web/*
+    ssh-keygen -t rsa -f /etc/concourse/keys/web/tsa_host_key -N ''
+    ssh-keygen -t rsa -f /etc/concourse/keys/web/session_signing_key -N ''
+  notify: Restart Concourse
+
+- name: Generate Concourse Worker Key
+  shell: |
+    rm -rf /etc/concourse/keys/worker/*
+    ssh-keygen -t rsa -f /etc/concourse/keys/worker/worker_key -N ''
+    cp /etc/concourse/keys/worker/worker_key.pub /etc/concourse/keys/web/authorized_worker_keys
+    cp /etc/concourse/keys/web/tsa_host_key.pub /etc/concourse/keys/worker/
+  notify: Restart Concourse
+
+- name: Restart Concourse
+  shell: |
+    docker restart concourse-worker
+    docker restart concourse-web
+
+- name: Restart NGINX Container
+  docker_container:
+    name: nginx
+    restart: yes

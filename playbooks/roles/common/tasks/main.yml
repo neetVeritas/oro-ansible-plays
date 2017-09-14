@@ -1,0 +1,101 @@
+---
+- name: Set Server Timezones
+  timezone:
+    name: "{{oro_default_timezone}}"
+
+- name: Update Apt Cache and Install Build Essentials
+  apt:
+    name: build-essential
+    state: present
+    update_cache: yes
+
+- name: Install fail2ban
+  apt:
+    name: fail2ban
+    state: present
+
+- name: Install Python
+  apt:
+    name: python
+    state: present
+
+# necessary for ansible
+- name: Install Python SDK
+  apt:
+    name: python-dev
+    state: present
+
+# necessary for ansible
+- name: Install Python Software Properties
+  apt:
+    name: python-software-properties
+    state: present
+
+# necessary for ansible and htpasswd
+- name: Install Python Pass Lib
+  apt:
+    name: python-passlib
+    state: present
+
+# necessary for ansible
+- name: Install FFI SDK
+  apt:
+    name: libffi-dev
+    state: present
+
+- name: Install Pip
+  apt:
+    name: python-pip
+    state: present
+
+- name: Install Ansible
+  pip:
+    name: ansible
+    version: 2.3
+    state: present
+
+- name: Check Docker Installed
+  shell: which docker
+  register: docker_check
+  ignore_errors: True
+
+# will install the latest version of docker
+- name: Install Docker
+  shell: curl https://get.docker.com/ | sh
+  become: true
+  when: docker_check.rc == 1
+
+- name: Install Docker-py
+  pip:
+    name: docker
+    version: 2.5.1
+    state: present
+
+# will install the latest version of docker compose
+- name: Install Docker Compose
+  pip:
+    name: docker-compose
+    version: 1.16.1
+    state: present
+
+- name: Install AWS Cli
+  pip:
+    name: awscli
+    state: present
+
+# all nginx configurations will be located at /etc/nginx on the target host
+# all nginx logs will be located at /var/log/nginx on the target host
+- name: Run NGNINX Docker Container
+  docker_container:
+    name: nginx
+    image: nginx
+    state: started
+    restart_policy: unless-stopped
+    volumes:
+      - /var/log/nginx:/var/log/nginx
+      - /etc/nginx/conf.d:/etc/nginx/conf.d
+      - /etc/nginx/proxy.conf:/etc/nginx/proxy.conf:ro
+    published_ports:
+      - 80:80
+      - 443:443
+      

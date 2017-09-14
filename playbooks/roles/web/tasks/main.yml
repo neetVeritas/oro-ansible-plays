@@ -1,0 +1,26 @@
+---
+- name: Add PHP Apt Repository
+  apt_repository:
+    repo: 'ppa:ondrej/php'
+    state: present
+
+- name: Install PHP 7
+  apt:
+    name: php7.0
+    state: present
+    update_cache: yes
+
+- name: Check Node.js Installed
+  shell: which node
+  register: node_check
+  ignore_errors: True
+
+- name: Add Node.js 8 Repository
+  shell: curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+  when: node_check.rc == 1
+  become: true
+
+- name: Install Node.js 8
+  apt:
+    name: nodejs
+    state: present

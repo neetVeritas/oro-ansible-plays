@@ -1,0 +1,14 @@
+server {
+    listen 80;
+
+    server_name {{oro_concourse_subdomain}}.{{oro_host_address}};
+
+    location / {
+        proxy_pass http://{{inventory_hostname}}:{{oro_concourse_web_port}};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}

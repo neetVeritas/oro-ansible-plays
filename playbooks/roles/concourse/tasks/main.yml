@@ -1,0 +1,65 @@
+- name: Create Postgres Container For Concourse
+  docker_container:
+    name: concourse-db
+    image: postgres:9.5
+    state: started
+    restart_policy: unless-stopped
+    env:
+      POSTGRES_DB: "{{oro_concourse_db_name}}"
+      POSTGRES_USER: "{{oro_concourse_db_user}}"
+      POSTGRES_PASSWORD: "{{oro_concourse_db_pass}}"
+      PGDATA: /database
+
+- name: Create Concourse Web Container
+  docker_container:
+    name: concourse-web
+    image: concourse/concourse:3.4.1
+    state: started
+    restart_policy: unless-stopped
+    links: concourse-db
+    command: web
+    env:
+      CONCOURSE_BASIC_AUTH_USERNAME: "{{oro_concourse_web_user}}"
+      CONCOURSE_BASIC_AUTH_PASSWORD: "{{oro_concourse_web_pass}}"
+      CONCOURSE_EXTERNAL_URL: "{{oro_concourse_subdomain}}.{{oro_host_address}}"
+      CONCOURSE_POSTGRES_HOST: concourse-db
+      CONCOURSE_POSTGRES_USER: "{{oro_concourse_db_user}}"
+      CONCOURSE_POSTGRES_PASSWORD: "{{oro_concourse_db_pass}}"
+      CONCOURSE_POSTGRES_DATABASE: "{{oro_concourse_db_name}}"
+    volumes:
+      - /etc/concourse/keys/web:/concourse-keys
+    published_ports:
+      - "{{oro_concourse_web_port}}:8080"
+  notify: Generate Concourse Web Key
+
+- name: Create Concourse Worker Container
+  docker_container:
+    name: concourse-worker
+    image: concourse/concourse:3.4.1
+    state: started
+    restart_policy: unless-stopped
+    links: concourse-web
+    command: worker
+    env:
+      CONCOURSE_TSA_HOST: concourse-web
+    volumes:
+      - /etc/concourse/keys/worker:/concourse-keys
+  notify: Generate Concourse Worker Key
+
+- name: Create Postgres Backup Cron Job
+  cron:
+    name: "backup concourse postgres"
+    minute: 0
+    hour: 12
+    user: root
+    state: present
+    job: "docker exec -u {{oro_concourse_db_user}} concourse-db pg_dump -Fc {{oro_concourse_db_name}} > /etc/concourse/backups/concourse-$(date +%s).dump"
+
+- name: Apply NGINX Configuration for Concourse Web
+  template:
+    src: concourse.conf.j2
+    dest: /etc/nginx/conf.d/concourse.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart NGINX Container

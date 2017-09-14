@@ -1,0 +1,6 @@
+---
+- name: Apply concourse ci server configurations to concourse node
+  hosts: concourse
+
+  roles:
+    - concourse

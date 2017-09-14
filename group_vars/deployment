@@ -1,0 +1,6 @@
+---
+
+ansible_ssh_user: root
+ansible_ssh_pass: somepassword
+oro_forum_subdomain: forum
+oro_broker_subdomain: broker

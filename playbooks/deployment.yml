@@ -1,0 +1,5 @@
+- name: Apply web server configuration to deployment node
+  hosts: deployment
+
+  roles:
+    - web

@@ -1,0 +1,5 @@
+- name: Apply docker registry server configurations to registry node
+  hosts: registry
+
+  roles:
+    - registry

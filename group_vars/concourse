@@ -1,0 +1,11 @@
+---
+
+ansible_ssh_user: root
+ansible_ssh_pass: somepassword
+oro_concourse_subdomain: ci
+oro_concourse_db_name: concourse
+oro_concourse_db_user: oroteam
+oro_concourse_db_pass: somepassword
+oro_concourse_web_user: oroteam
+oro_concourse_web_pass: somepassword
+oro_concourse_web_port: 3000
