@@ -58,7 +58,7 @@ At this time, these plays only support Ubuntu 14 (trusty) and Ubuntu 16 (xenial)
 To run this ansible playbook, ansible 2.2 or higher must be installed on your host machine.
 Our Makefile has the following recipes available for use:
 
-* **ping**: Use ansible to check the leath of our host machines.
+* **ping**: Use ansible to check the health of our host machines.
 * **play**: Run our ansible configurations against our target host group.
 * **decrypt**: Decrypt `hosts` file and `group_vars` variables.
 * **encrypt**: Encrypt `hosts` file and `group_vars` variables.
