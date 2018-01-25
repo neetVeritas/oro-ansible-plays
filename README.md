@@ -1,4 +1,4 @@
-# Oro / ***Ansible Plays***
+# Oro / Ansible Plays
 
 > This project has been cloned from the private oro-project repository.
 
@@ -17,7 +17,6 @@ The `common` playbook contains default configurations for *every* server node.
 
 Vulnerable host specific configurations viarables have been stored in the `group_vars` directory.
 These variables have been encrypted using [ansible-vault](http://docs.ansible.com/ansible/latest/playbooks_vault.html).
-Members of the Oro development team will be handed private keys, for any further questions contact John.
 
 These playbooks will be responsible for installing the following:
 
